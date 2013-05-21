@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{08BF71F7-7C17-444F-9621-92CCA038871C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StamprApiClient</RootNamespace>
+    <AssemblyName>StamprApiClient</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\IStamprApiClient.cs" />
+    <Compile Include="Api\Models\AuthorizationType.cs" />
+    <Compile Include="Api\Models\Batch\BatchModel.cs" />
+    <Compile Include="Api\Models\Mailing\Status.cs" />
+    <Compile Include="Api\Models\Search\SearchModel.cs" />
+    <Compile Include="Api\Models\Search\SearchValidationResult.cs" />
+    <Compile Include="Api\Models\Batch\Status.cs" />
+    <Compile Include="Api\Models\Config\Output.cs" />
+    <Compile Include="Api\Models\Config\Style.cs" />
+    <Compile Include="Api\Models\Config\Turnaround.cs" />
+    <Compile Include="Api\Models\Config\Size.cs" />
+    <Compile Include="Api\Models\Config\ConfigModel.cs" />
+    <Compile Include="Api\Models\Mailing\Format.cs" />
+    <Compile Include="Api\Models\Mailing\MailingModel.cs" />
+    <Compile Include="Authorization\Abstract\IAuthorizationStrategy.cs" />
+    <Compile Include="Authorization\BasicAuthorizationStrategy.cs" />
+    <Compile Include="BatchStamprApiClient.cs" />
+    <Compile Include="Communicator\Abstract\IServiceCommunicator.cs" />
+    <Compile Include="Communicator\Models\ErrorDescription.cs" />
+    <Compile Include="Communicator\Models\ServiceResponse.cs" />
+    <Compile Include="Communicator\ServiceCommunicator.cs" />
+    <Compile Include="ConfigStamprApiClient.cs" />
+    <Compile Include="Exceptions\ServiceCommunicationException.cs" />
+    <Compile Include="MailingStamprApiClient.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\StringResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StringResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StamprApiClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\StringResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StringResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
