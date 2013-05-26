@@ -159,6 +159,29 @@ namespace NUnitTest
             Assert.Throws<ArgumentException>(() => stamprApiClient.GetBatches(new SearchModel<Status>()));
         }
 
+        [Test]
+        public void TestSearchBatchMailingsSuccessful()
+        {
+            IAuthorizationStrategy basicAuthStrategy = MockAuthStrategy();
+            IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
+            IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
+            var mailings = stamprApiClient.GetBatchMailings(1930, StamprApiClient.Api.Models.Mailing.Status.queued, DateTime.Parse("2013-05-24T18:01:35.707Z"), DateTime.Parse("2013-05-25T18:01:35.707Z"), 12).First();
+            Assert.AreEqual(mailings.Format, StamprApiClient.Api.Models.Mailing.Format.none);
+            Assert.AreEqual(mailings.Address, "Add");
+            Assert.AreEqual(mailings.ReturnAddress, "RetAdd");
+            Assert.AreEqual(mailings.Mailing_Id, 1348);
+            Assert.AreEqual(mailings.User_Id, 1);
+        }
+
+        [Test]
+        public void TestSearchBatchMailingsInvalidSearch()
+        {
+            IAuthorizationStrategy basicAuthStrategy = MockAuthStrategy();
+            IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
+            IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
+            Assert.Throws<ArgumentException>(() => stamprApiClient.GetBatchMailings(1930, new SearchModel<StamprApiClient.Api.Models.Mailing.Status>()));
+        }
+        
         private IAuthorizationStrategy MockAuthStrategy()
         {
             Mock<IAuthorizationStrategy> mock = new Mock<IAuthorizationStrategy>();
@@ -213,12 +236,30 @@ namespace NUnitTest
                 });
             mock.Setup(x =>
                 x.GetRequest(
+                It.Is<string>(address => VerifyAddressWithId(address)),
+                It.IsAny<string>())).Returns(() => new ServiceResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Status = "OK",
+                    Response = GetBatchString()
+                });
+            mock.Setup(x =>
+                x.GetRequest(
                 It.Is<string>(address => VerifyAddressWithQueryString(address)),
                 It.IsAny<string>())).Returns(() => new ServiceResponse()
                 {
                     StatusCode = System.Net.HttpStatusCode.OK,
                     Status = "OK",
                     Response = GetBatchString()
+                });
+            mock.Setup(x =>
+                x.GetRequest(
+                It.Is<string>(address => VerifyAddressWithBatchMailingQueryString(address)),
+                It.IsAny<string>())).Returns(() => new ServiceResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Status = "OK",
+                    Response = GetMailingString()
                 });
             mock.Setup(x =>
                 x.DeleteRequest(
@@ -262,8 +303,13 @@ namespace NUnitTest
 
         private bool VerifyAddressWithQueryString(string address)
         {
-            string configsString = string.Concat(_url, "/batches/");
+            string configsString = string.Concat(_url, "/batches/with/", Status.processing.ToString());
             return address.StartsWith(configsString);
+        }
+
+        private bool VerifyAddressWithBatchMailingQueryString(string address)
+        {
+            return address == "https://testing.dev.stam.pr/api/batches/1930/mailings/with/queued/2013-05-24T18%3a01%3a35.707Z/2013-05-25T18%3a01%3a35.707Z/12";
         }
 
         private bool IsValidBatchDictionary(IDictionary<string, object> dictionary)
@@ -292,6 +338,11 @@ namespace NUnitTest
         private string GetBatchString()
         {
             return "[{\"version\":\"1.0\",\"template\":\"Hello\",\"user_id\":1,\"config_id\":4679,\"status\":\"processing\",\"batch_id\":1904}]";
+        }
+
+        private string GetMailingString()
+        {
+            return "[{\"batch_id\":\"1919\",\"address\":\"Add\",\"returnaddress\":\"RetAdd\",\"format\":\"none\",\"data\":\"{\\\"Hello\\\":\\\"bye\\\"}\",\"user_id\":1,\"printer_id\":null,\"pdf\":null,\"status\":\"render\",\"initiated\":\"2013-05-21T18:01:35.707Z\",\"mailing_id\":1348}]";
         }
     }
 }

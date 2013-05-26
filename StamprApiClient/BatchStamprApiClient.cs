@@ -38,7 +38,7 @@ namespace StamprApiClient
                 ThrowCommunicationException(serviceReponse);
             }
 
-            BatchModel resultConfigModel = new JavaScriptSerializer().Deserialize<BatchModel>(serviceReponse.Response);
+            BatchModel resultConfigModel =_modelConvertor.ConvertToModel<BatchModel>(serviceReponse.Response);
             return resultConfigModel;
         }
 
@@ -191,7 +191,7 @@ namespace StamprApiClient
         public MailingModel[] GetBatchMailings(int id)
         {
             string relatedUri = JoinRelativeUri(_batchRelatedUri, id, _mailingRelatedUri);
-            return GetModels<MailingModel>(relatedUri);
+            return GetMailingModels<MailingModel>(relatedUri);
         }
 
         public MailingModel[] GetBatchMailings(int id, MailingStatus status)
@@ -281,7 +281,7 @@ namespace StamprApiClient
             props.Add(_mailingRelatedUri);
             props.AddRange(searchModel.PropertiesToSearch());
             string relatedUri = JoinRelativeUri(props.ToArray());
-            return GetModels<MailingModel>(relatedUri);
+            return GetMailingModels<MailingModel>(relatedUri);
         }
     }
 }

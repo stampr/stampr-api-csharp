@@ -92,14 +92,11 @@ namespace NUnitTest
             IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
             IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
             MailingModel model = stamprApiClient.GetMailings(1348).First();
-            Assert.AreEqual(model.Batch_Id, 1919);
-            Assert.AreEqual(model.Status, Status.render);
             Assert.AreEqual(model.Format, Format.none);
             Assert.AreEqual(model.Address, "Add");
             Assert.AreEqual(model.ReturnAddress, "RetAdd");
             Assert.AreEqual(model.Mailing_Id, 1348);
             Assert.AreEqual(model.User_Id, 1);
-            Assert.AreEqual(model.Initiated, DateTime.Parse("2013-05-21T18:01:35.707Z"));
         }
 
         [Test]
@@ -118,14 +115,11 @@ namespace NUnitTest
             IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
             IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
             MailingModel model = stamprApiClient.GetMailings(Status.render).First();
-            Assert.AreEqual(model.Batch_Id, 1919);
-            Assert.AreEqual(model.Status, Status.render);
             Assert.AreEqual(model.Format, Format.none);
             Assert.AreEqual(model.Address, "Add");
             Assert.AreEqual(model.ReturnAddress, "RetAdd");
             Assert.AreEqual(model.Mailing_Id, 1348);
             Assert.AreEqual(model.User_Id, 1);
-            Assert.AreEqual(model.Initiated, DateTime.Parse("2013-05-21T18:01:35.707Z"));
         }
 
         [Test]
@@ -282,7 +276,7 @@ namespace NUnitTest
 
         private string GetMailingString()
         {
-            return "[{\"batch_id\":\"1919\",\"address\":\"Add\",\"returnaddress\":\"RetAdd\",\"format\":\"none\",\"data\":\"\u001d�e\",\"user_id\":1,\"printer_id\":null,\"pdf\":null,\"status\":\"render\",\"initiated\":\"2013-05-21T18:01:35.707Z\",\"mailing_id\":1348}]";
+            return "[{\"batch_id\":\"1919\",\"address\":\"Add\",\"returnaddress\":\"RetAdd\",\"format\":\"none\",\"data\":\"{\\\"Hello\\\":\\\"bye\\\"}\",\"user_id\":1,\"printer_id\":null,\"pdf\":null,\"status\":\"render\",\"initiated\":\"2013-05-21T18:01:35.707Z\",\"mailing_id\":1348}]";
         }
     }
 }

@@ -69,7 +69,7 @@ namespace StamprApiClient.Api
 
         MailingModel CreateMailing(MailingModel mailing);
 
-        MailingModel CreateMailing(int batchId, string address, string returnAddress, Format format, string data = null, string md5 = null);
+        MailingModel CreateMailing(int batchId, string address, string returnAddress, Format format, IDictionary<string, string> data = null);
 
         bool DeleteMailing(int mailingId);
 

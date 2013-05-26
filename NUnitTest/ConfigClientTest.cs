@@ -75,6 +75,49 @@ namespace NUnitTest
             Assert.AreEqual(model.Version, "1.0");
         }
 
+        [Test]
+        public void TestGetConfigAllUnsuccessful()
+        {
+            IAuthorizationStrategy basicAuthStrategy = MockAuthStrategy();
+            IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
+            IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient("http://no", _username, _password, serviceCommunicator, basicAuthStrategy);
+            Assert.Throws<ServiceCommunicationException>(() => stamprApiClient.GetConfig(1));
+        }
+
+        [Test]
+        public void TestGetConfigAllSuccessful()
+        {
+            IAuthorizationStrategy basicAuthStrategy = MockAuthStrategy();
+            IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
+            IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
+            ConfigModel model = stamprApiClient.GetAllConfigs().First();
+            Assert.AreEqual(model.Output, Output.single);
+            Assert.AreEqual(model.Style, Style.color);
+            Assert.AreEqual(model.Turnaround, Turnaround.threeday);
+            Assert.AreEqual(model.Size, Size.standard);
+            Assert.AreEqual(model.ReturnEnvelope, false);
+            Assert.AreEqual(model.Config_Id, 4679);
+            Assert.AreEqual(model.User_Id, 1);
+            Assert.AreEqual(model.Version, "1.0");
+        }
+
+        [Test]
+        public void TestGetConfigAllPagingSuccessful()
+        {
+            IAuthorizationStrategy basicAuthStrategy = MockAuthStrategy();
+            IServiceCommunicator serviceCommunicator = MockServiceCommunicator();
+            IStamprApiClient stamprApiClient = new StamprApiClient.StamprApiClient(_url, _username, _password, serviceCommunicator, basicAuthStrategy);
+            ConfigModel model = stamprApiClient.GetAllConfigs(10).First();
+            Assert.AreEqual(model.Output, Output.single);
+            Assert.AreEqual(model.Style, Style.color);
+            Assert.AreEqual(model.Turnaround, Turnaround.threeday);
+            Assert.AreEqual(model.Size, Size.standard);
+            Assert.AreEqual(model.ReturnEnvelope, false);
+            Assert.AreEqual(model.Config_Id, 4679);
+            Assert.AreEqual(model.User_Id, 1);
+            Assert.AreEqual(model.Version, "1.0");
+        }
+
         private IAuthorizationStrategy MockAuthStrategy()
         {
             Mock<IAuthorizationStrategy> mock = new Mock<IAuthorizationStrategy>();
@@ -125,6 +168,15 @@ namespace NUnitTest
                     Status = "OK",
                     Response = GetConfigString()
                 });
+            mock.Setup(x =>
+                x.GetRequest(
+                It.Is<string>(address => VerifyGetAllAddress(address)),
+                It.IsAny<string>())).Returns(() => new ServiceResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Status = "OK",
+                    Response = GetConfigString()
+                });
             return mock.Object;
         }
 
@@ -144,6 +196,19 @@ namespace NUnitTest
             int id;
             string idString = address.Replace(configsString, string.Empty);
             return int.TryParse(idString, out id);
+        }
+
+        private bool VerifyGetAllAddress(string address)
+        {
+            string configsString = string.Concat(_url, "/configs/browse/all");
+            if (!address.StartsWith(configsString))
+            {
+                return false;
+            }
+
+            int id;
+            string idString = address.Replace(configsString, string.Empty).TrimStart('/');
+            return string.IsNullOrEmpty(idString) || int.TryParse(idString, out id);
         }
 
         private bool IsValidConfigDictionary(IDictionary<string, object> dictionary)

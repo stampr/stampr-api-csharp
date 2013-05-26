@@ -39,7 +39,7 @@ namespace StamprApiClient
                 ThrowCommunicationException(serviceReponse);
             }
 
-            ConfigModel resultConfigModel = new JavaScriptSerializer().Deserialize<ConfigModel>(serviceReponse.Response);
+            ConfigModel resultConfigModel = _modelConvertor.ConvertToModel<ConfigModel>(serviceReponse.Response);
             return resultConfigModel;
         }
 
@@ -51,13 +51,13 @@ namespace StamprApiClient
 
         public ConfigModel[] GetAllConfigs()
         {
-            string relatedUri = JoinRelativeUri(_configRelatedUri, "all");
+            string relatedUri = JoinRelativeUri(_configRelatedUri, "browse", "all");
             return GetModels<ConfigModel>(relatedUri);
         }
 
         public ConfigModel[] GetAllConfigs(int paging)
         {
-            string relatedUri = JoinRelativeUri(_configRelatedUri, "all", paging);
+            string relatedUri = JoinRelativeUri(_configRelatedUri, "browse", "all", paging);
             return GetModels<ConfigModel>(relatedUri);
         }
     }

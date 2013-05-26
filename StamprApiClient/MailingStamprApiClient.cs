@@ -28,11 +28,11 @@ namespace StamprApiClient
                 ThrowCommunicationException(serviceReponse);
             }
 
-            MailingModel resultConfigModel = new JavaScriptSerializer().Deserialize<MailingModel>(serviceReponse.Response);
+            MailingModel resultConfigModel = _mailingModelConvertor.ConvertToModel<MailingModel>(serviceReponse.Response);
             return resultConfigModel;
         }
 
-        public MailingModel CreateMailing(int batchId, string address, string returnAddress, Format format, string data = null, string md5 = null)
+        public MailingModel CreateMailing(int batchId, string address, string returnAddress, Format format, IDictionary<string, string> data = null)
         {
             MailingModel mailing = new MailingModel()
             {
@@ -40,8 +40,7 @@ namespace StamprApiClient
                 Address = address,
                 ReturnAddress = returnAddress,
                 Format = format,
-                Data = data,
-                Md5 = md5
+                Data = data
             };
 
             return CreateMailing(mailing);
@@ -64,7 +63,7 @@ namespace StamprApiClient
         public MailingModel[] GetMailings(int id)
         {
             string relatedUri = JoinRelativeUri(_mailingRelatedUri, id);
-            return GetModels<MailingModel>(relatedUri);
+            return GetMailingModels<MailingModel>(relatedUri);
         }
 
         public MailingModel[] GetMailings(Status status)
@@ -152,7 +151,20 @@ namespace StamprApiClient
             props.Add(_mailingRelatedUri);
             props.AddRange(searchModel.PropertiesToSearch());
             string relatedUri = JoinRelativeUri(props.ToArray());
-            return GetModels<MailingModel>(relatedUri);
+            return GetMailingModels<MailingModel>(relatedUri);
+        }
+
+        private T[] GetMailingModels<T>(string relatedUri)
+        {
+            Uri uri = new Uri(_baseUri, relatedUri);
+            ServiceResponse serviceReponse = _serviceCommunicator.GetRequest(uri.AbsoluteUri, _authorizationStrategy.GetAuthorizationHeader());
+            if (serviceReponse.StatusCode != HttpStatusCode.OK)
+            {
+                ThrowCommunicationException(serviceReponse);
+            }
+
+            T[] resultBatchModel = _mailingModelConvertor.ConvertToModel<T[]>(serviceReponse.Response);
+            return resultBatchModel;
         }
     }
 }

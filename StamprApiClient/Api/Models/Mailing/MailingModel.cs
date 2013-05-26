@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web.Script.Serialization;
+using System.Security.Cryptography;
 
 namespace StamprApiClient.Api.Models.Mailing
 {
     public class MailingModel
     {
-        public int Mailing_Id { get; set; }
+        public int Mailing_Id { get; internal set; }
 
-        public int User_Id { get; set; }
+        public int User_Id { get; internal set; }
 
-        public string Printer_Id { get; set; }
+        public string Printer_Id { get; internal set; }
 
-        public string Pdf { get; set; }
+        public string Pdf { get; internal set; }
 
-        public Status Status { get; set; }
+        public Status Status { get; internal set; }
 
-        public DateTime Initiated { get; set; }
+        public DateTime Initiated { get; internal set; }
 
         public int Batch_Id { get; set; }
 
@@ -27,9 +29,7 @@ namespace StamprApiClient.Api.Models.Mailing
 
         public Format Format { get; set; }
 
-        public string Data { get; set; }
-
-        public string Md5 { get; set; }
+        public IDictionary<string, string> Data { get; set; }
 
         internal IDictionary<string, object> ToPostPropertiesDictionary()
         {
@@ -38,14 +38,17 @@ namespace StamprApiClient.Api.Models.Mailing
             properties.Add("address", Address);
             properties.Add("returnaddress", ReturnAddress);
             properties.Add("format", Format);
-            if (!string.IsNullOrEmpty(Data))
+            if (Data != null)
             {
-                properties.Add("data", Data);
-            }
-
-            if (!string.IsNullOrEmpty(Md5))
-            {
-                properties.Add("md5", Md5);
+                string data = new JavaScriptSerializer().Serialize(Data);
+                string base64Data = Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
+                using(MD5 md5 = new MD5CryptoServiceProvider())
+                {
+                    byte[] checkSum = md5.ComputeHash(Encoding.UTF8.GetBytes(base64Data));
+                    string result = BitConverter.ToString(checkSum).Replace("-", string.Empty).ToLower();
+                    properties.Add("data", base64Data);
+                    properties.Add("md5", result);
+                }
             }
 
             return properties;

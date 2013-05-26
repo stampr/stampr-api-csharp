@@ -14,6 +14,7 @@ using System.Web.Script.Serialization;
 using System.Web;
 using StamprApiClient.Exceptions;
 using System.Net;
+using StamprApiClient.Convertor;
 
 namespace StamprApiClient
 {
@@ -26,7 +27,8 @@ namespace StamprApiClient
         private readonly string _password;
         private readonly Uri _baseUri;
         private readonly IServiceCommunicator _serviceCommunicator;
-        private readonly JavaScriptSerializer _javaScriptSerializer;
+        private readonly ModelConvertor _modelConvertor;
+        private readonly MailingModelConvertor _mailingModelConvertor;
         private IAuthorizationStrategy _authorizationStrategy;
 
         internal StamprApiClient(string baseUrl, string userName, string password, IServiceCommunicator serviceCommunicator, IAuthorizationStrategy authorizationStrategy)
@@ -41,7 +43,8 @@ namespace StamprApiClient
             _password = password;
             _authorizationStrategy = authorizationStrategy;
             _serviceCommunicator = serviceCommunicator;
-            _javaScriptSerializer = new JavaScriptSerializer();
+            _modelConvertor = new ModelConvertor();
+            _mailingModelConvertor = new MailingModelConvertor();
         }
 
         public StamprApiClient(string baseUrl, string userName, string password, AuthorizationType authorizationType = AuthorizationType.Basic)
@@ -86,13 +89,13 @@ namespace StamprApiClient
         private T[] GetModels<T>(string relatedUri)
         {
             Uri uri = new Uri(_baseUri, relatedUri);
-            ServiceResponse serviceReponse = _serviceCommunicator.GetRequest(uri.ToString(), _authorizationStrategy.GetAuthorizationHeader());
+            ServiceResponse serviceReponse = _serviceCommunicator.GetRequest(uri.AbsoluteUri, _authorizationStrategy.GetAuthorizationHeader());
             if (serviceReponse.StatusCode != HttpStatusCode.OK)
             {
                 ThrowCommunicationException(serviceReponse);
             }
 
-            T[] resultBatchModel = _javaScriptSerializer.Deserialize<T[]>(serviceReponse.Response);
+            T[] resultBatchModel = _modelConvertor.ConvertToModel<T[]>(serviceReponse.Response);
             return resultBatchModel;
         }
 
@@ -103,7 +106,7 @@ namespace StamprApiClient
             {
                 try
                 {
-                    response = _javaScriptSerializer.Deserialize<ErrorDescription>(serviceReponse.Response);
+                    response = _modelConvertor.ConvertToModel<ErrorDescription>(serviceReponse.Response);
                 }
                 catch { }
             }
@@ -118,7 +121,7 @@ namespace StamprApiClient
 
         private string JoinRelativeUri(params object[] uriParts)
         {
-            return string.Join("/", uriParts);
+            return string.Join("/", uriParts.Select(part => HttpUtility.UrlEncode(part != null ? part.ToString() : string.Empty)));
         }
     }
 }

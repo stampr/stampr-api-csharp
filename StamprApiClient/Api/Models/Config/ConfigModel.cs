@@ -8,14 +8,14 @@ namespace StamprApiClient.Api.Models.Config
 {
     public class ConfigModel
     {
-        public int Config_Id { get; set; }
-        public int User_Id { get; set; }
-        public bool ReturnEnvelope { get; set; }
-        public string Version { get; set; } 
-        public Size Size { get; set; }
-        public Output Output { get; set; }
-        public Turnaround Turnaround { get; set; }
-        public Style Style { get; set; }
+        public int Config_Id { get; internal set; }
+        public int User_Id { get; internal set; }
+        public bool ReturnEnvelope { get; internal set; }
+        public string Version { get; internal set; }
+        public Size Size { get; internal set; }
+        public Output Output { get; internal set; }
+        public Turnaround Turnaround { get; internal set; }
+        public Style Style { get; internal set; }
 
         internal IDictionary<string, object> ToPostPropertiesDictionary()
         {

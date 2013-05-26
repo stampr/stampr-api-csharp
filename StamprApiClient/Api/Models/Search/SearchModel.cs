@@ -61,7 +61,12 @@ namespace StamprApiClient.Api.Models.Search
             IList<string> objects = new List<string>();
             if (Status.HasValue)
             {
+                objects.Add("with");
                 objects.Add(Status.Value.ToString());
+            }
+            else
+            {
+                objects.Add("browse");
             }
 
             if (Start.HasValue)

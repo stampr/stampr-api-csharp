@@ -12,85 +12,122 @@ namespace NUnitTest
     [TestFixture]
     public class SearchBatchTest
     {
+        private const string _dateFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+
         [Test]
         public void TestSearchValidAll()
         {
+            DateTime date = DateTime.Now;
+
             SearchModel<Status> model = new SearchModel<Status>()
             {
                 Status = Status.hold,
-                End = DateTime.Now,
-                Start = DateTime.Now,
+                End = date.AddMinutes(5),
+                Start = date,
                 Paging = 10
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("with", searchArray[0]);
+            Assert.AreEqual(Status.hold.ToString(), searchArray[1]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[2]);
+            Assert.AreEqual(date.ToUniversalTime().AddMinutes(5).ToString(_dateFormat), searchArray[3]);
+            Assert.AreEqual("10", searchArray[4]);
         }
 
         [Test]
         public void TestSearchValidNoStatus()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
-                End = DateTime.Now,
-                Start = DateTime.Now,
+                End = date.AddMinutes(5),
+                Start = date,
                 Paging = 10
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("browse", searchArray[0]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[1]);
+            Assert.AreEqual(date.ToUniversalTime().AddMinutes(5).ToString(_dateFormat), searchArray[2]);
+            Assert.AreEqual("10", searchArray[3]);
         }
 
         [Test]
         public void TestSearchValidNoStatusNoPaging()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
-                End = DateTime.Now,
-                Start = DateTime.Now
+                End = date.AddMinutes(5),
+                Start = date
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("browse", searchArray[0]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[1]);
+            Assert.AreEqual(date.ToUniversalTime().AddMinutes(5).ToString(_dateFormat), searchArray[2]);
         }
 
         [Test]
         public void TestSearchValidNoPaging()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
                 Status = Status.hold,
-                End = DateTime.Now,
-                Start = DateTime.Now
+                End = date.AddMinutes(5),
+                Start = date
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("with", searchArray[0]);
+            Assert.AreEqual(Status.hold.ToString(), searchArray[1]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[2]);
+            Assert.AreEqual(date.ToUniversalTime().AddMinutes(5).ToString(_dateFormat), searchArray[3]);
         }
 
         [Test]
         public void TestSearchValidNoPagingAndEndTime()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
                 Status = Status.hold,
-                Start = DateTime.Now
+                Start = date
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("with", searchArray[0]);
+            Assert.AreEqual(Status.hold.ToString(), searchArray[1]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[2]);
         }
 
         [Test]
         public void TestSearchValidStartTime()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
-                Start = DateTime.Now
+                Start = date
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("browse", searchArray[0]);
+            Assert.AreEqual(date.ToUniversalTime().ToString(_dateFormat), searchArray[1]);
+
         }
 
         [Test]
@@ -103,15 +140,19 @@ namespace NUnitTest
 
             SearchValidationResult res = model.IsValidSearchCombination();
             Assert.True(res.IsValid);
+            string[] searchArray = model.PropertiesToSearch();
+            Assert.AreEqual("with", searchArray[0]);
+            Assert.AreEqual(Status.hold.ToString(), searchArray[1]);
         }
 
         [Test]
         public void TestSearchMissingStartTime()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
                 Status = Status.hold,
-                End = DateTime.Now
+                End = date.AddMinutes(5)
             };
 
             SearchValidationResult res = model.IsValidSearchCombination();
@@ -131,9 +172,10 @@ namespace NUnitTest
         [Test]
         public void TestSearchMissingEndTimeForPaging()
         {
+            DateTime date = DateTime.Now;
             SearchModel<Status> model = new SearchModel<Status>()
             {
-                Start = DateTime.Now,
+                Start = date,
                 Paging = 10
             };
 
