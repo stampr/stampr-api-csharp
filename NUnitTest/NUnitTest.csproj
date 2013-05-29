@@ -35,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq">
-      <HintPath>..\..\..\Moq.dll</HintPath>
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>NUnit\Moq.dll</HintPath>
     </Reference>
     <Reference Include="nunit-console-runner">
       <HintPath>NUnit\nunit-console-runner.dll</HintPath>
@@ -76,6 +77,10 @@
       <Project>{08BF71F7-7C17-444F-9621-92CCA038871C}</Project>
       <Name>StamprApiClient</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NUnit\Moq.dll" />
+    <Content Include="NUnit\Moq.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
